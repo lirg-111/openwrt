@@ -9,7 +9,7 @@ IIO_MENU:=Industrial I/O Modules
 define KernelPackage/iio-core
   SUBMENU:=$(IIO_MENU)
   TITLE:=Industrial IO core
-  DEPENDS:=+!LINUX_6_6:kmod-dma-buf
+  DEPENDS:=+kmod-dma-buf
   KCONFIG:= \
 	CONFIG_IIO \
 	CONFIG_IIO_BUFFER=y \
@@ -287,7 +287,7 @@ $(eval $(call KernelPackage,iio-bme680-spi))
 
 define KernelPackage/iio-bmp280
   TITLE:=BMP180/BMP280/BME280 pressure/temperatur sensor
-  DEPENDS:=+kmod-regmap-core +!LINUX_6_6:kmod-industrialio-triggered-buffer
+  DEPENDS:=+kmod-regmap-core +kmod-industrialio-triggered-buffer
   KCONFIG:=CONFIG_BMP280
   FILES:=$(LINUX_DIR)/drivers/iio/pressure/bmp280.ko
   $(call AddDepends/iio)
@@ -333,6 +333,23 @@ endef
 
 $(eval $(call KernelPackage,iio-bmp280-spi))
 
+
+define KernelPackage/iio-dps310
+  TITLE:=DPS310/DPS368/DPS422 pressure temperatur sensor
+  DEPENDS:=+kmod-regmap-i2c
+  KCONFIG:=CONFIG_DPS310
+  FILES:=$(LINUX_DIR)/drivers/iio/pressure/dps310.ko
+  AUTOLOAD:=$(call AutoProbe,dps310)
+  $(call AddDepends/iio)
+endef
+define KernelPackage/iio-dps310/description
+  Kernel module for Infineon DPS310/DPS368/DPS422 pressure and
+  temperature I2C sensor.
+endef
+
+$(eval $(call KernelPackage,iio-dps310))
+
+
 define KernelPackage/iio-htu21
   DEPENDS:=+kmod-i2c-core
   TITLE:=HTU21 humidity & temperature sensor
@@ -371,6 +388,25 @@ define KernelPackage/iio-ccs811/description
 endef
 
 $(eval $(call KernelPackage,iio-ccs811))
+
+
+define KernelPackage/iio-richtek-rtq6056
+  TITLE:=Richtek RTQ6056 Current and Power Monitor ADC
+  DEPENDS:=+kmod-i2c-core +kmod-regmap-i2c +kmod-industrialio-triggered-buffer
+  KCONFIG:= CONFIG_RICHTEK_RTQ6056
+  FILES:=$(LINUX_DIR)/drivers/iio/adc/rtq6056.ko
+  AUTOLOAD:=$(call AutoProbe,rtq6056)
+  $(call AddDepends/iio)
+endef
+
+define KernelPackage/iio-richtek-rtq6056/description
+ Support for Richtek RTQ6056 Current and Power Monitor ADC.
+ RTQ6056 is a high accuracy current-sense monitor with I2C and SMBus
+ compatible interface, and the device provides full information for
+ system by reading out the load current and power.
+endef
+
+$(eval $(call KernelPackage,iio-richtek-rtq6056))
 
 
 define KernelPackage/iio-si7020
